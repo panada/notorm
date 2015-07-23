@@ -1,4 +1,7 @@
 <?php
+
+namespace Panada\Notorm;
+
 /** NotORM - simple reading data from the database
 * @link http://www.notorm.com/
 * @author Jakub Vrana, http://www.vrana.cz/
@@ -6,12 +9,6 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
 * @license http://www.gnu.org/licenses/gpl-2.0.html GNU General Public License, version 2 (one or other)
 */
-
-if (!interface_exists('JsonSerializable')) {
-	interface JsonSerializable {
-		function jsonSerialize();
-	}
-}
 
 include_once dirname(__FILE__) . "/NotORM/Structure.php";
 include_once dirname(__FILE__) . "/NotORM/Cache.php";
@@ -49,27 +46,40 @@ abstract class NotORM_Abstract {
 */
 class NotORM extends NotORM_Abstract {
 	
+	protected static $instance = [];
+	
 	/** Create database representation
 	* @param PDO
 	* @param NotORM_Structure or null for new NotORM_Structure_Convention
 	* @param NotORM_Cache or null for no cache
 	*/
-	function __construct(PDO $connection, NotORM_Structure $structure = null, NotORM_Cache $cache = null) {
+	function __construct(\PDO $connection, NotORM_Structure $structure = null, NotORM_Cache $cache = null) {
 		$this->connection = $connection;
-		$this->driver = $connection->getAttribute(PDO::ATTR_DRIVER_NAME);
+		$this->driver = $connection->getAttribute(\PDO::ATTR_DRIVER_NAME);
 		if (!isset($structure)) {
-			$structure = new NotORM_Structure_Convention;
+			$structure = new \NotORM_Structure_Convention;
 		}
 		$this->structure = $structure;
 		$this->cache = $cache;
 	}
+	
+	public static function getInstance($type = 'default')
+    {
+        if (! isset(self::$instance[$type])) {
+            self::$instance[$type] = new static(
+				(new \Panada\Medoo\Medoo)->connect(\Panada\Resources\Config::database()[$type])
+			);
+        }
+        
+        return self::$instance[$type];
+    }
 	
 	/** Get table data to use as $db->table[1]
 	* @param string
 	* @return NotORM_Result
 	*/
 	function __get($table) {
-		return new NotORM_Result($this->structure->getReferencingTable($table, ''), $this, true);
+		return new \NotORM_Result($this->structure->getReferencingTable($table, ''), $this, true);
 	}
 	
 	/** Set write-only properties
@@ -94,7 +104,7 @@ class NotORM extends NotORM_Abstract {
 	* @return NotORM_Result
 	*/
 	function __call($table, array $where) {
-		$return = new NotORM_Result($this->structure->getReferencingTable($table, ''), $this);
+		$return = new \NotORM_Result($this->structure->getReferencingTable($table, ''), $this);
 		if ($where) {
 			call_user_func_array(array($return, 'where'), $where);
 		}

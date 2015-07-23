@@ -4,7 +4,7 @@
 * @method NotORM_Result and(mixed $condition, mixed $parameters = array()) Add AND condition
 * @method NotORM_Result or(mixed $condition, mixed $parameters = array()) Add OR condition
 */
-class NotORM_Result extends NotORM_Abstract implements Iterator, ArrayAccess, Countable, JsonSerializable {
+class NotORM_Result extends Panada\Notorm\NotORM_Abstract implements Iterator, ArrayAccess, Countable, JsonSerializable {
 	protected $single;
 	protected $select = array(), $conditions = array(), $where = array(), $parameters = array(), $order = array(), $limit = null, $offset = null, $group = "", $having = "", $lock = null;
 	protected $union = array(), $unionOrder = array(), $unionLimit = null, $unionOffset = null;
@@ -16,7 +16,7 @@ class NotORM_Result extends NotORM_Abstract implements Iterator, ArrayAccess, Co
 	* @param bool single row
 	* @access protected must be public because it is called from NotORM
 	*/
-	function __construct($table, NotORM $notORM, $single = false) {
+	function __construct($table, Panada\Notorm\NotORM $notORM, $single = false) {
 		$this->table = $table;
 		$this->notORM = $notORM;
 		$this->single = $single;

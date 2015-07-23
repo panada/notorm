@@ -2,7 +2,7 @@
 
 /** Single row representation
 */
-class NotORM_Row extends NotORM_Abstract implements IteratorAggregate, ArrayAccess, Countable, JsonSerializable {
+class NotORM_Row extends Panada\Notorm\NotORM_Abstract implements IteratorAggregate, ArrayAccess, Countable, JsonSerializable {
 	private $modified = array();
 	protected $row, $result, $primary;
 	
