@@ -65,7 +65,7 @@ class NotORM extends NotORM_Abstract
     {
         if (!isset(self::$instance[$type])) {
             self::$instance[$type] = new static(
-                (new \Panada\Medoo\Medoo())->connect(\Panada\Resources\Config::database()[$type])
+                (new \Panada\Medoo\Medoo())->connect(\Panada\Resource\Config::database()[$type])
             );
         }
 
