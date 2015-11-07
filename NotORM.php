@@ -63,13 +63,7 @@ class NotORM extends NotORM_Abstract
 
     public static function getInstance($type = 'default')
     {
-        if (!isset(self::$instance[$type])) {
-            self::$instance[$type] = new static(
-                (new \Panada\Medoo\Medoo())->connect(\Panada\Resource\Config::database()[$type])
-            );
-        }
-
-        return self::$instance[$type];
+        return new static(\Panada\Database\SQL::getInstance($type)->connect());
     }
 
     /** Get table data to use as $db->table[1]
