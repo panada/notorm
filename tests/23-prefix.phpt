@@ -4,7 +4,7 @@ Table prefix
 <?php
 include_once dirname(__FILE__) . "/connect.inc.php";
 
-$prefix = new NotORM($connection, new NotORM_Structure_Convention('id', '%s_id', '%s', 'prefix_'));
+$prefix = new Panada\Notorm\NotORM($connection, new Panada\Notorm\NotORM_Structure_Convention('id', '%s_id', '%s', 'prefix_'));
 $applications = $prefix->application("author.name", "Jakub Vrana");
 echo "$applications\n";
 ?>

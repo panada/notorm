@@ -1,5 +1,7 @@
 <?php
 
+namespace Panada\Notorm;
+
 /** Representation of filtered table grouped by some column
  */
 class NotORM_MultiResult extends NotORM_Result

@@ -1,5 +1,8 @@
 <?php
 
+namespace Panada\Notorm;
+use PDO;
+
 /** Information about tables and columns structure
  */
 interface NotORM_Structure

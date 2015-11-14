@@ -4,7 +4,7 @@ Session cache
 <?php
 $_SESSION = array(); // not session_start() - headers already sent
 include_once dirname(__FILE__) . "/connect.inc.php";
-$cache = new NotORM($connection, null, new NotORM_Cache_Session);
+$cache = new Panada\Notorm\NotORM($connection, null, new Panada\Notorm\NotORM_Cache_Session);
 
 $applications = $cache->application();
 $application = $applications->fetch();

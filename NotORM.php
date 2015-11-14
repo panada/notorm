@@ -26,7 +26,7 @@ abstract class NotORM_Abstract
     protected $debug = false;
     protected $debugTimer;
     protected $freeze = false;
-    protected $rowClass = 'NotORM_Row';
+    protected $rowClass = 'Panada\Notorm\NotORM_Row';
     protected $jsonAsArray = false;
 
     protected function access($key, $delete = false)
@@ -55,7 +55,7 @@ class NotORM extends NotORM_Abstract
         $this->connection = $connection;
         $this->driver = $connection->getAttribute(\PDO::ATTR_DRIVER_NAME);
         if (!isset($structure)) {
-            $structure = new \NotORM_Structure_Convention();
+            $structure = new NotORM_Structure_Convention();
         }
         $this->structure = $structure;
         $this->cache = $cache;
@@ -73,7 +73,7 @@ class NotORM extends NotORM_Abstract
      */
     public function __get($table)
     {
-        return new \NotORM_Result($this->structure->getReferencingTable($table, ''), $this, true);
+        return new NotORM_Result($this->structure->getReferencingTable($table, ''), $this, true);
     }
 
     /** Set write-only properties
@@ -100,7 +100,7 @@ class NotORM extends NotORM_Abstract
      */
     public function __call($table, array $where)
     {
-        $return = new \NotORM_Result($this->structure->getReferencingTable($table, ''), $this);
+        $return = new NotORM_Result($this->structure->getReferencingTable($table, ''), $this);
         if ($where) {
             call_user_func_array(array($return, 'where'), $where);
         }

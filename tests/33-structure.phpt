@@ -4,7 +4,7 @@ Structure for non-conventional column
 <?php
 include_once dirname(__FILE__) . "/connect.inc.php";
 
-class SoftwareConvention extends NotORM_Structure_Convention {
+class SoftwareConvention extends Panada\Notorm\NotORM_Structure_Convention {
 	function getReferencedTable($name, $table) {
 		switch ($name) {
 			case 'maintainer': return parent::getReferencedTable('author', $table);
@@ -13,7 +13,7 @@ class SoftwareConvention extends NotORM_Structure_Convention {
 	}
 }
 
-$convention = new NotORM($connection, new SoftwareConvention);
+$convention = new Panada\Notorm\NotORM($connection, new SoftwareConvention);
 $maintainer = $convention->application[1]->maintainer;
 echo $maintainer['name'] . "\n";
 foreach ($maintainer->application()->via('maintainer_id') as $application) {

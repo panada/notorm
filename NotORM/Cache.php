@@ -1,5 +1,7 @@
 <?php
 
+namespace Panada\Notorm;
+
 /** Loading and saving data, it's only cache so load() does not need to block until save()
  */
 interface NotORM_Cache

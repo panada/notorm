@@ -1,5 +1,7 @@
 <?php
 
+namespace Panada\Notorm;
+
 /** SQL literal value
  */
 class NotORM_Literal
