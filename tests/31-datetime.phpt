@@ -10,7 +10,7 @@ $software->application()->insert(array(
 	"id" => 5,
 	"author_id" => 11,
 	"title" => $date,
-	"slogan" => new Panada\Notorm\NotORM_Literal("?", $date),
+	"slogan" => new Panada\Notorm\NotORMLiteral("?", $date),
 ));
 
 $application = $software->application()->where("title = ?", $date)->fetch();

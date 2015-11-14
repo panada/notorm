@@ -4,7 +4,7 @@ namespace Panada\Notorm;
 
 /** Loading and saving data, it's only cache so load() does not need to block until save()
  */
-interface NotORM_Cache
+interface NotORMCache
 {
     /** Load stored data
      * @param string
@@ -22,7 +22,7 @@ interface NotORM_Cache
 
 /** Cache using $_SESSION["NotORM"]
  */
-class NotORM_Cache_Session implements NotORM_Cache
+class NotORMCacheSession implements NotORMCache
 {
     public function load($key)
     {
@@ -41,7 +41,7 @@ class NotORM_Cache_Session implements NotORM_Cache
 
 /** Cache using file
  */
-class NotORM_Cache_File implements NotORM_Cache
+class NotORMCacheFile implements NotORMCache
 {
     private $filename, $data = array();
 
@@ -71,7 +71,7 @@ class NotORM_Cache_File implements NotORM_Cache
 
 /** Cache using PHP include
  */
-class NotORM_Cache_Include implements NotORM_Cache
+class NotORMCacheInclude implements NotORMCache
 {
     private $filename, $data = array();
 
@@ -104,7 +104,7 @@ class NotORM_Cache_Include implements NotORM_Cache
 
 /** Cache storing data to the "notorm" table in database
  */
-class NotORM_Cache_Database implements NotORM_Cache
+class NotORMCacheDatabase implements NotORMCache
 {
     private $connection;
 
@@ -149,7 +149,7 @@ class NotORM_Cache_Database implements NotORM_Cache
 
 /** Cache using "NotORM." prefix in Memcache
  */
-class NotORM_Cache_Memcache implements NotORM_Cache
+class NotORMCacheMemcache implements NotORMCache
 {
     private $memcache;
 
@@ -176,7 +176,7 @@ class NotORM_Cache_Memcache implements NotORM_Cache
 
 /** Cache using "NotORM." prefix in APC
  */
-class NotORM_Cache_APC implements NotORM_Cache
+class NotORMCacheAPC implements NotORMCache
 {
     public function load($key)
     {

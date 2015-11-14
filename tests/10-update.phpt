@@ -8,7 +8,7 @@ $id = 5; // auto_increment is disabled in demo
 $application = $software->application()->insert(array(
 	"id" => $id,
 	"author_id" => $software->author[12],
-	"title" => new Panada\Notorm\NotORM_Literal("'Texy'"),
+	"title" => new Panada\Notorm\NotORMLiteral("'Texy'"),
 	"web" => "",
 	"slogan" => "The best humane Web text generator",
 ));

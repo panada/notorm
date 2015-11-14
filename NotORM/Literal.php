@@ -4,7 +4,7 @@ namespace Panada\Notorm;
 
 /** SQL literal value
  */
-class NotORM_Literal
+class NotORMLiteral
 {
     protected $value = '';
 

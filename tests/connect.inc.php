@@ -7,6 +7,4 @@ $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 $connection->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 $software = new Panada\Notorm\NotORM($connection);
 
-//var_dump(get_declared_classes());exit;
-
 //~ $software->debug = true;

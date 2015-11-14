@@ -4,11 +4,11 @@ namespace Panada\Notorm;
 
 /** Representation of filtered table grouped by some column
  */
-class NotORM_MultiResult extends NotORM_Result
+class NotORMMultiResult extends NotORMResult
 {
     private $result, $column, $active;
 
-    public function __construct($table, NotORM_Result $result, $column, $active)
+    public function __construct($table, NotORMResult $result, $column, $active)
     {
         parent::__construct($table, $result->notORM);
         $this->result = $result;
@@ -19,7 +19,7 @@ class NotORM_MultiResult extends NotORM_Result
     /** Specify referencing column
      * @param string
      *
-     * @return NotORM_MultiResult fluent interface
+     * @return NotORMMultiResult fluent interface
      */
     public function via($column)
     {
@@ -30,11 +30,11 @@ class NotORM_MultiResult extends NotORM_Result
         return $this;
     }
 
-    public function insert_multi(array $rows)
+    public function insertMulti(array $rows)
     {
         $args = array();
         foreach ($rows as $data) {
-            if ($data instanceof Traversable && !$data instanceof NotORM_Result) {
+            if ($data instanceof Traversable && !$data instanceof NotORMResult) {
                 $data = iterator_to_array($data);
             }
             if (is_array($data)) {
@@ -43,14 +43,14 @@ class NotORM_MultiResult extends NotORM_Result
             $args[] = $data;
         }
 
-        return parent::insert_multi($args);
+        return parent::insertMulti($args);
     }
 
-    public function insert_update(array $unique, array $insert, array $update = array())
+    public function insertUpdate(array $unique, array $insert, array $update = array())
     {
         $unique[$this->column] = $this->active;
 
-        return parent::insert_update($unique, $insert, $update);
+        return parent::insertUpdate($unique, $insert, $update);
     }
 
     protected function single()

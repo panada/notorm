@@ -18,7 +18,7 @@ include_once dirname(__FILE__).'/NotORM/MultiResult.php';
 include_once dirname(__FILE__).'/NotORM/Row.php';
 
 // friend visibility emulation
-abstract class NotORM_Abstract
+abstract class NotORMAbstract
 {
     protected $connection, $driver, $structure, $cache;
     protected $notORM, $table, $primary, $rows, $referenced = array();
@@ -26,7 +26,7 @@ abstract class NotORM_Abstract
     protected $debug = false;
     protected $debugTimer;
     protected $freeze = false;
-    protected $rowClass = 'Panada\Notorm\NotORM_Row';
+    protected $rowClass = 'Panada\Notorm\NotORMRow';
     protected $jsonAsArray = false;
 
     protected function access($key, $delete = false)
@@ -37,25 +37,25 @@ abstract class NotORM_Abstract
 /** Database representation
  * @property-write mixed $debug = false Enable debugging queries, true for error_log($query), callback($query, $parameters) otherwise
  * @property-write bool $freeze = false Disable persistence
- * @property-write string $rowClass = 'NotORM_Row' Class used for created objects
+ * @property-write string $rowClass = 'NotORMRow' Class used for created objects
  * @property-write bool $jsonAsArray = false Use array instead of object in Result JSON serialization
  * @property-write string $transaction Assign 'BEGIN', 'COMMIT' or 'ROLLBACK' to start or stop transaction
  */
-class NotORM extends NotORM_Abstract
+class NotORM extends NotORMAbstract
 {
     protected static $instance = [];
 
     /** Create database representation
      * @param PDO
-     * @param NotORM_Structure or null for new NotORM_Structure_Convention
-     * @param NotORM_Cache or null for no cache
+     * @param NotORMStructure or null for new NotORMStructureConvention
+     * @param NotORMCache or null for no cache
      */
-    public function __construct(\PDO $connection, NotORM_Structure $structure = null, NotORM_Cache $cache = null)
+    public function __construct(\PDO $connection, NotORMStructure $structure = null, NotORMCache $cache = null)
     {
         $this->connection = $connection;
         $this->driver = $connection->getAttribute(\PDO::ATTR_DRIVER_NAME);
         if (!isset($structure)) {
-            $structure = new NotORM_Structure_Convention();
+            $structure = new NotORMStructureConvention();
         }
         $this->structure = $structure;
         $this->cache = $cache;
@@ -69,11 +69,11 @@ class NotORM extends NotORM_Abstract
     /** Get table data to use as $db->table[1]
      * @param string
      *
-     * @return NotORM_Result
+     * @return NotORMResult
      */
     public function __get($table)
     {
-        return new NotORM_Result($this->structure->getReferencingTable($table, ''), $this, true);
+        return new NotORMResult($this->structure->getReferencingTable($table, ''), $this, true);
     }
 
     /** Set write-only properties
@@ -94,13 +94,13 @@ class NotORM extends NotORM_Abstract
 
     /** Get table data
      * @param string
-     * @param array (["condition"[, array("value")]]) passed to NotORM_Result::where()
+     * @param array (["condition"[, array("value")]]) passed to NotORMResult::where()
      *
-     * @return NotORM_Result
+     * @return NotORMResult
      */
     public function __call($table, array $where)
     {
-        $return = new NotORM_Result($this->structure->getReferencingTable($table, ''), $this);
+        $return = new NotORMResult($this->structure->getReferencingTable($table, ''), $this);
         if ($where) {
             call_user_func_array(array($return, 'where'), $where);
         }

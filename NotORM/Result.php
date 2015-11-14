@@ -4,10 +4,10 @@ namespace Panada\Notorm;
 use PDO;
 
 /** Filtered table representation
- * @method NotORM_Result and(mixed $condition, mixed $parameters = array()) Add AND condition
- * @method NotORM_Result or(mixed $condition, mixed $parameters = array()) Add OR condition
+ * @method NotORMResult and(mixed $condition, mixed $parameters = array()) Add AND condition
+ * @method NotORMResult or(mixed $condition, mixed $parameters = array()) Add OR condition
  */
-class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, \Countable, \JsonSerializable
+class NotORMResult extends NotORMAbstract implements \Iterator, \ArrayAccess, \Countable, \JsonSerializable
 {
     protected $single;
     protected $select = array(), $conditions = array(), $where = array(), $parameters = array(), $order = array(), $limit = null, $offset = null, $group = '', $having = '', $lock = null;
@@ -210,7 +210,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
             return '0';
         }
         
-        if (is_int($val) || $val instanceof NotORM_Literal) { // number or SQL code - for example "NOW()"
+        if (is_int($val) || $val instanceof NotORMLiteral) { // number or SQL code - for example "NOW()"
             return (string) $val;
         }
         
@@ -222,7 +222,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
      *
      * @return int number of affected rows or false in case of an error
      */
-    public function insert_multi(array $rows)
+    public function insertMulti(array $rows)
     {
         if ($this->notORM->freeze) {
             return false;
@@ -247,7 +247,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
                 }
                 $values[] = $this->quote($value);
                 foreach ($value as $val) {
-                    if ($val instanceof NotORM_Literal && $val->parameters) {
+                    if ($val instanceof NotORMLiteral && $val->parameters) {
                         $parameters = array_merge($parameters, $val->parameters);
                     }
                 }
@@ -269,15 +269,15 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
     }
 
     /** Insert row in a table
-     * @param mixed array($column => $value)|Traversable for single row insert or NotORM_Result|string for INSERT ... SELECT
+     * @param mixed array($column => $value)|Traversable for single row insert or NotORMResult|string for INSERT ... SELECT
      * @param ... used for extended insert
      *
-     * @return mixed inserted NotORM_Row or false in case of an error or number of affected rows for INSERT ... SELECT
+     * @return mixed inserted NotORMRow or false in case of an error or number of affected rows for INSERT ... SELECT
      */
     public function insert($data)
     {
         $rows = func_get_args();
-        $return = $this->insert_multi($rows);
+        $return = $this->insertMulti($rows);
         if (!$return) {
             return false;
         }
@@ -309,7 +309,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
         foreach ($data as $key => $val) {
             // doesn't use binding because $this->parameters can be filled by ? or :name
             $values[] = "$key = ".$this->quote($val);
-            if ($val instanceof NotORM_Literal && $val->parameters) {
+            if ($val instanceof NotORMLiteral && $val->parameters) {
                 $parameters = array_merge($parameters, $val->parameters);
             }
         }
@@ -332,7 +332,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
      *
      * @return int number of affected rows or false in case of an error
      */
-    public function insert_update(array $unique, array $insert, array $update = array())
+    public function insertUpdate(array $unique, array $insert, array $update = array())
     {
         if (!$update) {
             $update = $insert;
@@ -383,7 +383,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
     /** Get last insert ID
      * @return string number
      */
-    public function insert_id()
+    public function insertId()
     {
         return $this->notORM->connection->lastInsertId();
     }
@@ -408,7 +408,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
      * @param string for example "column, MD5(column) AS column_md5", empty string to reset previously set columns
      * @param string ...
      *
-     * @return NotORM_Result fluent interface
+     * @return NotORMResult fluent interface
      */
     public function select($columns)
     {
@@ -429,7 +429,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
      * @param mixed array accepted by PDOStatement::execute or a scalar value
      * @param mixed ...
      *
-     * @return NotORM_Result fluent interface
+     * @return NotORMResult fluent interface
      */
     public function where($condition, $parameters = array())
     {
@@ -465,7 +465,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
                 $clone->select($this->notORM->structure->getPrimary($clone->table));
             }
             if ($this->notORM->driver != 'mysql') {
-                if ($clone instanceof NotORM_MultiResult) {
+                if ($clone instanceof NotORMMultiResult) {
                     array_shift($clone->select);
                     $clone->single();
                 }
@@ -475,7 +475,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
                 $in = array();
                 foreach ($clone as $row) {
                     $row = array_values(iterator_to_array($row));
-                    if ($clone instanceof NotORM_MultiResult && count($row) > 1) {
+                    if ($clone instanceof NotORMMultiResult && count($row) > 1) {
                         array_shift($row);
                     }
                     if (count($row) == 1) {
@@ -533,7 +533,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
             case 'OR':
                 return $this->whereOperator($operator, $args);
         }
-        trigger_error("Call to undefined method NotORM_Result::$name()", E_USER_ERROR);
+        trigger_error("Call to undefined method NotORMResult::$name()", E_USER_ERROR);
     }
 
     /** Shortcut for where()
@@ -541,7 +541,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
      * @param mixed
      * @param mixed ...
      *
-     * @return NotORM_Result fluent interface
+     * @return NotORMResult fluent interface
      */
     public function __invoke($where, $parameters = array())
     {
@@ -554,7 +554,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
      * @param mixed "column1, column2 DESC" or array("column1", "column2 DESC"), empty string to reset previous order
      * @param string ...
      *
-     * @return NotORM_Result fluent interface
+     * @return NotORMResult fluent interface
      */
     public function order($columns)
     {
@@ -581,7 +581,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
      * @param int
      * @param int
      *
-     * @return NotORM_Result fluent interface
+     * @return NotORMResult fluent interface
      */
     public function limit($limit, $offset = null)
     {
@@ -601,7 +601,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
      * @param string
      * @param string
      *
-     * @return NotORM_Result fluent interface
+     * @return NotORMResult fluent interface
      */
     public function group($columns, $having = '')
     {
@@ -615,7 +615,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
     /** Set select FOR UPDATE or LOCK IN SHARE MODE
      * @param bool
      *
-     * @return NotORM_Result fluent interface
+     * @return NotORMResult fluent interface
      */
     public function lock($exclusive = true)
     {
@@ -625,12 +625,12 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
     }
 
     /**
-     * @param NotORM_Result
+     * @param NotORMResult
      * @param bool
      *
-     * @return NotORM_Result fluent interface
+     * @return NotORMResult fluent interface
      */
-    public function union(NotORM_Result $result, $all = false)
+    public function union(NotORMResult $result, $all = false)
     {
         $this->union[] = ' UNION '.($all ? 'ALL ' : '').($this->notORM->driver == 'sqlite' || $this->notORM->driver == 'oci' ? $result : "($result)");
         $this->parameters = array_merge($this->parameters, $result->parameters);
@@ -710,7 +710,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
             $exception = null;
             $parameters = array();
             foreach (array_merge($this->select, array($this, $this->group, $this->having), $this->order, $this->unionOrder) as $val) {
-                if (($val instanceof NotORM_Literal || $val instanceof self) && $val->parameters) {
+                if (($val instanceof NotORMLiteral || $val instanceof self) && $val->parameters) {
                     $parameters = array_merge($parameters, $val->parameters);
                 }
             }
@@ -748,7 +748,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
     /** Fetch next row of result
      * @param string column name to return or an empty string for the whole row
      *
-     * @return mixed string or null with $column, NotORM_Row without $column, false if there is no row
+     * @return mixed string or null with $column, NotORMRow without $column, false if there is no row
      */
     public function fetch($column = '')
     {
@@ -783,7 +783,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
         }
         foreach ($clone as $row) {
             $values = array_values(iterator_to_array($row));
-            if ($value != '' && $clone instanceof NotORM_MultiResult) {
+            if ($value != '' && $clone instanceof NotORMMultiResult) {
                 array_shift($values);
             }
             $return[(string) $values[0]] = ($value != '' ? $values[(array_key_exists(1, $values) ? 1 : 0)] : $row); // isset($values[1]) - fetchPairs("id", "id")
@@ -829,7 +829,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
         reset($this->keys);
     }
 
-    /** @return NotORM_Row */
+    /** @return NotORMRow */
     public function current()
     {
         return $this->data[current($this->keys)];
@@ -868,7 +868,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
     /** Get specified row
      * @param string row ID or array for where conditions
      *
-     * @return NotORM_Row or null if there is no such row
+     * @return NotORMRow or null if there is no such row
      */
     public function offsetGet($key)
     {
@@ -903,7 +903,7 @@ class NotORM_Result extends NotORM_Abstract implements \Iterator, \ArrayAccess, 
 
     /** Mimic row
      * @param string row ID
-     * @param NotORM_Row
+     * @param NotORMRow
      */
     public function offsetSet($key, $value)
     {
