@@ -107,4 +107,9 @@ class NotORM extends NotORMAbstract
 
         return $return;
     }
+    
+    public function getConnection()
+    {
+        return $this->connection;
+    }
 }
