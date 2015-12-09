@@ -16,7 +16,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-            "Panada\\NotORM\\": "NotORM.php"
+            "Panada\\NotORM\\": ""
         }
 	}
 }

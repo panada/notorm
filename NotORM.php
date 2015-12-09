@@ -61,11 +61,6 @@ class NotORM extends NotORMAbstract
         $this->cache = $cache;
     }
 
-    public static function getInstance($type = 'default')
-    {
-        return new static(\Panada\Database\SQL::getInstance($type)->connect());
-    }
-
     /** Get table data to use as $db->table[1]
      * @param string
      *
